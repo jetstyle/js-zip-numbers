@@ -1,0 +1,9 @@
+{
+  "name": "zip-numbers",
+  "version": "1.0.0",
+  "description": "Compression writing numbers",
+  "dependencies": {
+    "mocha": "^6.2.2"
+  },
+  "repository": "git://github.com/jetstyle/js-zip-numbers.git"
+}
