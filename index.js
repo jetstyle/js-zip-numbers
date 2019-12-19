@@ -1,15 +1,10 @@
 
-    // import {parse} from "./scripts/parser";
+    const NUM_DELIMITER = ',';
+    const DELTA_LIST_BY_ONE = '.';
+    const DELTA_LIST_BY_TWO = ':';
+    const ZIP_START_DELIMITER = '(';
+    const ZIP_END_DELIMITER = ')';
 
-    const NUM_DELIMITER = ','
-    const DELTA_LIST_BY_ONE = '.'
-    const DELTA_LIST_BY_TWO = ':'
-    const ZIP_START_DELIMITER = '('
-    const ZIP_END_DELIMITER = ')'
-
-    const maxLength = 1000000,
-        intBase = 10,
-        countTokens = 0;
 
     /**
      * Parse string to array of encoding numbers
@@ -17,19 +12,16 @@
      * @param string
      * @returns {[]|*[]}
      */
-    const parse = string => {
+    const decode = string => {
         if (!string) {
             return [];
         }
+        let items;
 
         // Parse base for int
         if (string.startsWith('x')) {
+            // Дописать функционал
         }
-        else {
-
-        }
-
-        let items;
 
         // Parse empty string as empty list
         if (string.startsWith('~')) {
@@ -38,28 +30,90 @@
         }
         else {
             items = parseString(string);
+            console.log(items)
         }
+
         return items;
     };
 
+    /**
+     * Parse string to tokens
+     *
+     * @param string
+     * @return {[]}
+     */
+    const parseString = string => {
+        let buff = '', tokens = [], zipBuff = [];
+
+        for (const ltr of string) {
+            if (ltr === ZIP_START_DELIMITER) zipBuff.push(1);
+            if (ltr === ZIP_END_DELIMITER) zipBuff.pop();
+            if (zipBuff.length === 0 && ltr === NUM_DELIMITER) {
+                parseToken(buff).forEach((item) => {
+                   tokens.push(item);
+                });
+                buff = '';
+            }
+            else buff += ltr;
+        }
+
+        if (buff) {
+            parseToken(buff).forEach((item) => {
+                tokens.push(item);
+            });
+        }
+
+        return tokens;
+    };
+
+
+    /**
+     * Parse token from string
+     *
+     * @param token
+     * @return {[]} array with tokens
+     */
+    const parseToken = token => {
+        let tokens = [];
+        if (token.indexOf(ZIP_START_DELIMITER) > -1) {
+            let [base, subString] = token.split(ZIP_START_DELIMITER);
+            base = parseInt(base, 10);
+            let items = parseString(subString.slice(0, subString.length-1));
+            items.forEach((item) => tokens.push(item+base));
+            return tokens;
+        }
+        if (token.indexOf('-') > -1) {
+            let [start, stop] = token.split('-');
+            start = parseInt(start, 10);
+            stop = parseInt(stop, 10);
+
+            for (let i = start; i <= stop; i += 1) {
+                tokens.push(i);
+            }
+        }
+        else tokens = [parseInt(token)];
+        return tokens;
+    };
 
     /**
      * Parse string by delta
      *
      * @param string
+     * @return {[]} array with tokens
      */
     const parseDelta = string => {
         let tokens = [],
             chunks = deltaChunks(string);
+
         chunks.forEach((chunk) => tokens = tokens.concat(parseDeltaChunks(chunk)));
 
         let last = 0;
-        for (const [i, token] of tokens.entries()) {
+        tokens.forEach((token, i) => {
             tokens[i]=token+last;
             last=tokens[i];
-        }
-        return tokens;
+        });
 
+        return tokens;
     };
 
 
@@ -67,97 +121,109 @@
      * Parse chunk of delta
      *
      * @param chunk
+     * @return {[]} array with tokens
      */
     const parseDeltaChunks = chunk => {
-        let listBy;
-        // Разобраться с wrap и заменить цикл на ИЛИ
-        if (chunk.startsWith(DELTA_LIST_BY_ONE)) {
-            listBy = 1;
-        }
-        else if (chunk.startsWith(DELTA_LIST_BY_TWO)) {
-            listBy = 2;
-        }
+        let listBy, blocks, tokens = [];
+        if (chunk.startsWith(DELTA_LIST_BY_ONE)) listBy = 1;
+        if (chunk.startsWith(DELTA_LIST_BY_TWO)) listBy = 2;
         if (listBy) chunk = chunk.slice(1);
-
-        let blocks = chunk.split('x');
+        blocks = chunk.split('x');
 
         if (listBy) {
-            let blocksCopy;
-            blocks.map((block) => blocksCopy=wrap(block, listBy));
-            if (blocks.length === 1) return blocksCopy;
-            let tokens = [];
-            for (const [i, block] of blocks.entries()) {
-                if (i > 0) {
-                    let c = tokens.pop();
-                    // tokens.ex
-                }
+            if (blocks.length === 1) {
+                tokens = wrap(chunk, listBy);
+            }
+            else {
+                // Дописать функционал
+            }
+
+        }
+        else if (blocks.length === 2) {
+            let num = parseInt(blocks[1], 10);
+            for (let i = 0; i < blocks[0]; i++) {
+                tokens.push(num);
             }
         }
-        // Если блоки были найдены
-        else if (blocks.length == 2) {
-            let num = _getInt(blocks[1]);
+        else tokens = [parseInt(chunk, 10)];
 
-        }
-        else return _getInt(blocks[0]);
+        return tokens;
 
     };
-
-    const wrap = (str, count) => {
-        let list = [];
-        for (let i = 0; i<str.length; i+=count) {
-            list.push(_getInt(str.slice(i, i+count)));
-        }
-        return list;
-    };
-
 
     /**
      * Yield chunks for delta string
      *
      * @param str for split into chunks
-     * @return list of chunks
+     * @return [] of chunks
      */
     const deltaChunks = str => {
-        let list = [],
+        let chunks = [],
             buf = '';
-
         for (let ltr of str) {
             if (ltr === NUM_DELIMITER) {
-                if (buf!=='') list.push(buf);
+                (buf!=='') && chunks.push(buf);
                 buf = '';
             }
             else if (ltr === DELTA_LIST_BY_ONE || ltr === DELTA_LIST_BY_TWO) {
-                if (buf!=='') list.push(buf);
+                (buf!=='') && chunks.push(buf);
                 buf = ltr;
             }
             else {
                 buf += ltr;
             }
         }
+        if (buf !== '') chunks.push(buf);
+        return chunks;
+    };
 
-        if (buf !== '') list.push(buf);
+    /**
+     * Convert string to several strings of length of count symbols
+     *
+     * @param str
+     * @param count symbols
+     * @returns {[]} list of several strings
+     */
+    const wrap = (str, count) => {
+        let list = [];
+        for (let i = 0; i<str.length; i+=count) {
+            list.push(parseInt(str.slice(i, i+count), 10));
+        }
         return list;
     };
 
 
-    /**
-     * Parse int
-     *
-     * @param num
-     */
-    const _getInt = num => (Number(num));
+    // Tests
+    // Done
+    decode('123');
+    decode('123,456');
+    decode('1-3');
+    decode('1-3,5-9');
+    decode('120(0,3,5,8,9)');
+    decode('12(1,4),140(0,2,5)');
+    decode('120(0,3,6),130-132');
+    decode('120(0-6)');
+    decode('~155');
+    decode('~1,2,3');
+    decode('~1');
+    decode('~.1');
+    decode('~.123');
+    decode('~.123:1012');
+    decode('~.12:10.45');
+    decode('~.12:10.45,146,234.14');
+    decode('~3x1');
+    decode('1-10');
+    decode('1,2,5,7-13');
+    decode('14(0-8,18)');
 
+    //  In process
+    //     Strings with base of numbers
+    // decode('x16;3,f');
+    // decode('x2;11,101');
+    //     Delta strings with x-ranges
+    // decode('~.13x3');
+    // decode('~.2x12');
+    // decode('~12,3x4,');
 
-    const parseString = string => {}
-
-    parse('~155');
-    parse('~1,2,3');
-    parse('~1');
-    parse('~.1');
-    parse('~.123');
-    parse('~.123:1012');
-    parse('~.12:10.45');
-    parse('~.12:10.45,146,234.14');
-    // parse('~3x1');
 
 
