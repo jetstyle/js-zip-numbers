@@ -139,9 +139,38 @@ const parseDeltaChunks = chunk => {
             tokens = wrap(chunk, listBy);
         }
         else {
-            // Дописать функционал
-        }
+            let items = [];
+            items = blocks.map((block, i) => (wrap(block, listBy)));
+            items.forEach((item, i) => {
+                if (i > 0) {
+                    let c = tokens.pop();
+                    for (let j = 0; j < c; j++)
+                        tokens.push(item[0]);
+                    item = item.slice(1);
+                }
+                tokens.push(...item);
+            });
+            return tokens;
 
+            // let nums = wrap(blocks[1], listBy);
+            // let num = _getInt(nums[0]);
+            // let list = [];
+            // for (let i = 0; i < blocks[0]; i++) {
+            //     items.push(num);
+            // }
+            // items.push(...nums.slice(1));
+            //
+            // let tokens = [];
+            // blocks.forEach((block) => items = items.concat(wrap(block,listBy)));
+            // items.forEach((block, i) => {
+            //     if (i > 0) {
+            //         let c = items.pop();
+            //         for (let j=0; j < c; j++) items.push(block[0]);
+            //         block = block.split(1);
+            //     }
+            //     items.push(...block);
+            // });
+        }
     }
     else if (blocks.length === 2) {
         let num = parseInt(blocks[1], intBase);
@@ -152,7 +181,6 @@ const parseDeltaChunks = chunk => {
     else tokens = [parseInt(chunk, intBase)];
 
     return tokens;
-
 };
 
 /**
@@ -219,14 +247,16 @@ const wrap = (string, count) => {
 // decode('1-10');
 // decode('1,2,5,7-13');
 // decode('14(0-8,18)');
+// decode('~.13x3');
+// decode('~.2x12');
+// decode('~12,3x4,');
+// decode('~.54x13:1010x11');
+
 //  In process
 //     Strings with base of numbers
 // decode('x16;3,f');
 // decode('x2;11,101');
-//     Delta strings with x-ranges
-// decode('~.13x3');
-// decode('~.2x12');
-// decode('~12,3x4,');
+
 
 
 
