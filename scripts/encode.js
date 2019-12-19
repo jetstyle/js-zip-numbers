@@ -27,20 +27,20 @@ const encode = tokens => {
  */
 const encodeString = tokens => {
     const min = tokens[0];
-    const sortedtokens = tokens.sort((a, b) => a - b);
+    const sortedTokens = tokens.sort((a, b) => a - b);
 
     let compressedString = `${min}`;
     let rangeStart = false;
     let values = [];
 
-    sortedtokens.forEach((id, index) => {
+    sortedTokens.forEach((id, index) => {
         const newId = id - min;
 
-        if (rangeStart === false && sortedtokens[index + 1] === id + 1) {
+        if (rangeStart === false && sortedTokens[index + 1] === id + 1) {
             rangeStart = newId;
-        } else if (rangeStart === false && sortedtokens[index + 1] !== id + 1) {
+        } else if (rangeStart === false && sortedTokens[index + 1] !== id + 1) {
             values.push(newId);
-        } else if (rangeStart !== false && sortedtokens[index + 1] !== id + 1) {
+        } else if (rangeStart !== false && sortedTokens[index + 1] !== id + 1) {
             values.push([rangeStart, newId]);
             rangeStart = false;
         }
@@ -60,9 +60,10 @@ const encodeString = tokens => {
  * @return {string} compressed string
  */
 const encodeDelta = tokens => {
-    const sortedtokens = tokens.sort((a, b) => a - b);
-
-    _xBlocks(_deltaCompression(sortedtokens));
+    const sortedTokens = tokens.sort((a, b) => a - b);
+    const chunks = _xBlocks(sortedTokens);
+    const compressedString = _compressToString(chunks);
+    return compressedString;
 };
 
 /**
@@ -74,7 +75,6 @@ const encodeDelta = tokens => {
  */
 const _xBlocks = tokens => {
     let buf = [],
-        last,
         tokensCopy = [];
     tokens.forEach((token, i) => {
         if (i !== 0 && (token !== tokens[i - 1] || i === tokens.length - 1)) {
@@ -84,6 +84,38 @@ const _xBlocks = tokens => {
     });
     if (buf.length !== 0) tokensCopy.push(`${buf}`);
     return tokensCopy;
+};
+
+/**
+ * Compress chunks to delta-strings
+ *
+ * @param chunks
+ * @return {string} compressedString
+ * @private
+ */
+const _compressToString = chunks => {
+    let del = ',',
+        newDel = null,
+        compressedString = '';
+
+    chunks.forEach((chunk) => {
+        if (chunk.indexOf('x') > -1) {
+            let [x, val] = chunk.split('x');
+            if (x.length === val.length) {
+                newDel = (val.length===1 ? '.' : (val.length===2 ? ':' : ','));
+            } else {
+                newDel = ',';
+            }
+        } else {
+            newDel = (chunk.length===1 ? '.' : (chunk.length===2 ? ':' : ','));
+        }
+        if (newDel === ',' || newDel !== del) {
+            compressedString += newDel;
+        }
+        compressedString += chunk;
+        del = newDel;
+    });
+    return `~${compressedString}`;
 };
 
 
@@ -96,5 +128,5 @@ const _xBlocks = tokens => {
 // encode([1, 3, 5, 7]);
 // encode([1, 2, 3, 5, 6, 7]);
 // encode([1, 2, 3, 5, 6, 7, 9]);
-_xBlocks([1, 1, 2]);
+
 
