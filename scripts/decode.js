@@ -4,6 +4,7 @@ const DELTA_LIST_BY_TWO = ':';
 const ZIP_START_DELIMITER = '(';
 const ZIP_END_DELIMITER = ')';
 
+const intBase = 10;
 
 /**
  * Parse string to array of encoding numbers
@@ -17,9 +18,13 @@ const decode = string => {
     }
     let items;
 
+    let intBase = 10;
+
     // Parse base for int
     if (string.startsWith('x')) {
-        // Дописать функционал
+        let base;
+        [base, string] = string.split('x');
+        intBase = base.slice(1);
     }
 
     // Parse empty string as empty list
@@ -83,14 +88,14 @@ const parseToken = token => {
     }
     if (token.indexOf('-') > -1) {
         let [start, stop] = token.split('-');
-        start = parseInt(start, 10);
-        stop = parseInt(stop, 10);
+        start = parseInt(start, intBase);
+        stop = parseInt(stop, intBase);
 
         for (let i = start; i <= stop; i += 1) {
             tokens.push(i);
         }
     }
-    else tokens = [parseInt(token)];
+    else tokens = [parseInt(token, intBase)];
     return tokens;
 };
 
@@ -139,12 +144,12 @@ const parseDeltaChunks = chunk => {
 
     }
     else if (blocks.length === 2) {
-        let num = parseInt(blocks[1], 10);
+        let num = parseInt(blocks[1], intBase);
         for (let i = 0; i < blocks[0]; i++) {
             tokens.push(num);
         }
     }
-    else tokens = [parseInt(chunk, 10)];
+    else tokens = [parseInt(chunk, intBase)];
 
     return tokens;
 
@@ -186,7 +191,7 @@ const deltaChunks = string => {
 const wrap = (string, count) => {
     let list = [];
     for (let i = 0; i<string.length; i+=count) {
-        list.push(parseInt(string.slice(i, i+count), 10));
+        list.push(parseInt(string.slice(i, i+count), intBase));
     }
     return list;
 };
@@ -194,26 +199,26 @@ const wrap = (string, count) => {
 
 // Tests
 // Done
-decode('123');
-decode('123,456');
-decode('1-3');
-decode('1-3,5-9');
-decode('120(0,3,5,8,9)');
-decode('12(1,4),140(0,2,5)');
-decode('120(0,3,6),130-132');
-decode('120(0-6)');
-decode('~155');
-decode('~1,2,3');
-decode('~1');
-decode('~.1');
-decode('~.123');
-decode('~.123:1012');
-decode('~.12:10.45');
-decode('~.12:10.45,146,234.14');
-decode('~3x1');
-decode('1-10');
-decode('1,2,5,7-13');
-decode('14(0-8,18)');
+// decode('123');
+// decode('123,456');
+// decode('1-3');
+// decode('1-3,5-9');
+// decode('120(0,3,5,8,9)');
+// decode('12(1,4),140(0,2,5)');
+// decode('120(0,3,6),130-132');
+// decode('120(0-6)');
+// decode('~155');
+// decode('~1,2,3');
+// decode('~1');
+// decode('~.1');
+// decode('~.123');
+// decode('~.123:1012');
+// decode('~.12:10.45');
+// decode('~.12:10.45,146,234.14');
+// decode('~3x1');
+// decode('1-10');
+// decode('1,2,5,7-13');
+// decode('14(0-8,18)');
 //  In process
 //     Strings with base of numbers
 // decode('x16;3,f');
