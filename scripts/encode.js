@@ -60,10 +60,26 @@ const encodeString = tokens => {
  * @return {string} compressed string
  */
 const encodeDelta = tokens => {
-    const sortedTokens = tokens.sort((a, b) => a - b);
+    const sortedTokens = _deltaCompression(tokens);
     const chunks = _xBlocks(sortedTokens);
     const compressedString = _compressToString(chunks);
     return compressedString;
+};
+
+/**
+ * Converting array of tokens to sorted array of difference tokens
+ *
+ * @param tokens
+ * @return {[]} sorted array of difference tokens
+ * @private
+ */
+const _deltaCompression = tokens => {
+    tokens.sort();
+    let diffTokens = [];
+    tokens.forEach((token, i) => {
+        i !== 0 ? diffTokens.push(token-tokens[i-1]) : diffTokens.push(token);
+    });
+    return diffTokens;
 };
 
 /**
@@ -128,5 +144,4 @@ const _compressToString = chunks => {
 // encode([1, 3, 5, 7]);
 // encode([1, 2, 3, 5, 6, 7]);
 // encode([1, 2, 3, 5, 6, 7, 9]);
-
 
