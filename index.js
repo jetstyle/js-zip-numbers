@@ -154,13 +154,13 @@
     /**
      * Yield chunks for delta string
      *
-     * @param str for split into chunks
+     * @param string for split into chunks
      * @return [] of chunks
      */
-    const deltaChunks = str => {
+    const deltaChunks = string => {
         let chunks = [],
             buf = '';
-        for (let ltr of str) {
+        for (let ltr of string) {
             if (ltr === NUM_DELIMITER) {
                 (buf!=='') && chunks.push(buf);
                 buf = '';
@@ -180,14 +180,14 @@
     /**
      * Convert string to several strings of length of count symbols
      *
-     * @param str
+     * @param string
      * @param count symbols
      * @returns {[]} list of several strings
      */
-    const wrap = (str, count) => {
+    const wrap = (string, count) => {
         let list = [];
-        for (let i = 0; i<str.length; i+=count) {
-            list.push(parseInt(str.slice(i, i+count), 10));
+        for (let i = 0; i<string.length; i+=count) {
+            list.push(parseInt(string.slice(i, i+count), 10));
         }
         return list;
     };
