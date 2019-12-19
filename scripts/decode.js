@@ -18,7 +18,7 @@ const decode = string => {
     }
     let items;
 
-    let intBase = 10;
+    var intBase = 10;
 
     // Parse base for int
     if (string.startsWith('x')) {
