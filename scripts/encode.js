@@ -1,22 +1,25 @@
+const MODE_SIMPLE_STRING = 1;
+const MODE_DELTA_STRING = 2;
+
 /**
  * Encode array tokens to string
  *
  * @param tokens array of tokens
+ * @param mode where 1 - encode to simple string, 2 - encode to delta string
  * @return {string} encoding string
  */
-const encode = tokens => {
+const encode = (tokens, mode = MODE_SIMPLE_STRING) => {
     if (!tokens || !Array.isArray(tokens)) {
         console.error('tokens argument should be an array of integers');
     }
-
     if (tokens.length === 0) return '';
-
-    if (tokens.length < 3) {
-        return tokens.join(',');
+    if (mode === MODE_SIMPLE_STRING) {
+        return(encodeString(tokens));
     }
-
-    encodeString(tokens);
-    encodeDelta(tokens);
+    else if (mode === MODE_DELTA_STRING) {
+        return(encodeDelta(tokens));
+    }
+    else console.error('you must select 1 or 2 at second parameter (1 - simple string, 2 - delta string)');
 };
 
 /**
@@ -26,6 +29,9 @@ const encode = tokens => {
  * @return {string} compressed string
  */
 const encodeString = tokens => {
+    if (tokens.length < 3) {
+        return tokens.join(',');
+    }
     const min = tokens[0];
     const sortedTokens = tokens.sort((a, b) => a - b);
 
@@ -48,8 +54,6 @@ const encodeString = tokens => {
 
     values = values.map(item => (typeof item === 'number' ? item : `${item[0]}-${item[1]}`));
     compressedString = `${compressedString}(${values.join(',')})`;
-
-    console.log(compressedString);
     return compressedString;
 };
 
@@ -143,5 +147,7 @@ const _compressToString = chunks => {
 // encode([1, 2, 3, 4]);
 // encode([1, 3, 5, 7]);
 // encode([1, 2, 3, 5, 6, 7]);
-// encode([1, 2, 3, 5, 6, 7, 9]);
+encode([1, 2, 3, 5, 6, 7, 9], 1);
+encode([1, 2, 3, 5, 6, 7, 9], 2);
+
 
