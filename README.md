@@ -12,37 +12,62 @@
     
 2. Разжимает строку, сжатую по одному из двух алгоритмов.
 
+## Установка
+
+```
+$ npm install zip-numbers
+```
+
 
 ## Примеры
 #### Encode:
 ```js
-var encodeObj = new Encode();
-encodeObj.parse([1, 3, 6], 1);
-// return '1(0,2,5)'
-encodeObj.parse([1, 3, 6], 2);
-// return '~.123'
+const zip = require('zip-numbers');
+
+zip.encode([1,3,6]);
+//=> '1(0,2,5)'
+
+zip.encode([1,3,6], 1);
+//=> '1(0,2,5)'
+
+zip.encode([1,3,6], 2);
+//=> '~.123'
 ```
 #### Decode:
 ```js
-var decodeObj = new Decode();
-decodeObj.parse('1(0,2,5)');
-// return [1, 3, 6]
-decodeObj.parse('~.123');
-// return [1, 3, 6]
+zip.decode('1(0,2,5)');
+//=> [1, 3, 6]
+
+zip.decode('~.123');
+//=> [1, 3, 6]
 ```
 
 ## API
-### new Encode(maxLength)  
-Создает объект `Encode` с необязательным параметром `maxLength`.
-### new Decode(maxLength)  
-Создает объект `Decode` с необязательным параметром `maxLength`.
-### encode.parse(tokens, mode)  
-Возвращает из массива чисел `[tokens]` сжатую строку `string` по алгоритму:
+### encode(tokens, [mode])
 
-`mode=1` диапазоны с выносом за скобку,
+#### tokens
 
-`mode=2` дельта-строки.
+Type: `Object` `Object[]`
 
-### decode.parse(string)  
-Возвращает из сжатой строки `string` массив чисел `[tokens]`.
+Array of tokens.
+
+#### mode
+
+Type: `number`
+
+Number 1 or 2 for description selecting of method (simple string or delta)
+
+##### return string  `string`
+
+
+### decode(string)
+
+#### string
+
+Type: `string`
+
+String of compressed tokens.
+
+##### return tokens  `Object` `Object[]`
+
 
