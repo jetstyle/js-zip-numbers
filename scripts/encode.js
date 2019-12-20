@@ -79,9 +79,9 @@ class Encode {
    * @return {string} compressed string
    */
   static encodeDelta(tokens) {
-    const sortedTokens = this.deltaCompression(tokens);
-    const chunks = this.xBlocks(sortedTokens);
-    return this.compressToString(chunks);
+    const sortedTokens = this._deltaCompression(tokens);
+    const chunks = this._xBlocks(sortedTokens);
+    return this._compressToString(chunks);
   }
 
   /**
@@ -91,7 +91,7 @@ class Encode {
    * @return {[]} sorted array of difference tokens
    * @private
    */
-  static deltaCompression(tokens) {
+  static _deltaCompression(tokens) {
     tokens.sort();
     const diffTokens = [];
     tokens.forEach((token, i) => {
@@ -107,7 +107,7 @@ class Encode {
    * @return {[]}
    * @private
    */
-  static xBlocks(tokens) {
+  static _xBlocks(tokens) {
     let buf = [];
     const tokensCopy = [];
     tokens.forEach((token, i) => {
@@ -127,7 +127,7 @@ class Encode {
    * @return {string} compressedString
    * @private
    */
-  static compressToString(chunks) {
+  static _compressToString(chunks) {
     let del = ',';
     let newDel = null;
     let compressedString = '';
