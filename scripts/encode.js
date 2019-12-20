@@ -23,7 +23,7 @@ class Encode {
       return '';
     }
     if (tokens.length > this.maxLength) {
-      console.error('array size is higher than allowed')
+      console.error('array size is higher than allowed');
       return '';
     }
     if (mode === this.MODE_SIMPLE_STRING) {
