@@ -25,8 +25,10 @@ class Decode {
     // Parse base for int
     if (string.startsWith('x')) {
       let base;
-      [base, string] = string.split('x');
-      this.intBase = base.slice(1);
+      [base, string] = string.split(';');
+      this.intBase = parseInt(base.slice(1), 10);
+    } else {
+      this.intBase = 10;
     }
 
     // Parse empty string as empty list
