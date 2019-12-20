@@ -20,6 +20,7 @@ class Decode {
     if (!string) {
       return [];
     }
+    this.countTokens = 0;
     let items;
 
     // Parse base for int
@@ -115,11 +116,15 @@ class Decode {
       let [start, stop] = token.split('-');
       start = parseInt(start, this.intBase);
       stop = parseInt(stop, this.intBase);
+      this._checkLength(Math.abs(stop - start));
 
       for (let i = start; i <= stop; i += 1) {
         tokens.push(i);
       }
     } else tokens = [parseInt(token, this.intBase)];
+
+    this._checkLength(tokens.length);
+    this.countTokens += tokens.length;
     return tokens;
   }
 
@@ -201,6 +206,16 @@ class Decode {
       list.push(parseInt(string.slice(i, i + count), this.intBase));
     }
     return list;
+  }
+
+  /**
+   * Check limit
+   *
+   * @param newCount
+   * @private
+   */
+  _checkLength(newCount) {
+    if ((this.countTokens + newCount) > this.maxLength) throw new Error('Tokens count is greater than the limit.');
   }
 }
 
