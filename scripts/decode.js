@@ -228,6 +228,4 @@ class Decode {
 // decode('x16;3,f');
 // decode('x2;11,101');
 
-let obj = new Decode();
-console.log(obj.parse('1(0,2,4,6)'));
-console.log(obj.parse('~.12x22'));
+module.exports = Decode;
