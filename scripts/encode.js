@@ -3,14 +3,11 @@ class Encode {
    * @return {string}
    */
   constructor(
-    tokens,
-    mode,
+    maxLength = 1000000,
   ) {
     this.MODE_SIMPLE_STRING = 1;
     this.MODE_DELTA_STRING = 2;
-
-    this.tokens = tokens;
-    this.mode = mode ? mode : this.MODE_SIMPLE_STRING;
+    this.maxLength = maxLength;
   }
 
   /**
@@ -20,11 +17,16 @@ class Encode {
    * @param mode where 1 - encode to simple string, 2 - encode to delta string
    * @return {string} encoding string
    */
-  parse(tokens = this.tokens, mode = this.mode) {
+  parse(tokens, mode = this.MODE_SIMPLE_STRING) {
+    if (tokens.length === 0) return '';
     if (!tokens || !Array.isArray(tokens)) {
       console.error('tokens argument should be an array of integers');
+      return '';
     }
-    if (tokens.length === 0) return '';
+    if (tokens.length > this.maxLength) {
+      console.error('array size is higher than allowed')
+      return '';
+    }
     if (mode === this.MODE_SIMPLE_STRING) {
       return (this.constructor.encodeString(tokens));
     }
@@ -163,5 +165,7 @@ class Encode {
 // console.log(encode([1, 2, 3, 5, 6, 7, 9], 1));
 // console.log(encode([1, 2, 3, 5, 6, 7, 9], 2));
 
-console.log(new Encode([1, 3, 5, 7], 1).parse());
-console.log(new Encode([1, 3, 5, 7], 2).parse());
+
+const obj = new Encode();
+console.log(obj.parse([1, 3, 5, 7], 1));
+console.log(obj.parse([1, 3, 5, 7], 2));
