@@ -35,6 +35,8 @@ zip.encode([1,3,6], 2);
 ```
 #### Decode:
 ```js
+const zip = require('zip-numbers');
+
 zip.decode('1(0,2,5)');
 //=> [1, 3, 6]
 
