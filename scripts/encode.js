@@ -18,7 +18,6 @@ class Encode {
    * @return {string} encoding string
    */
   parse(tokens, mode = this.MODE_SIMPLE_STRING) {
-    if (tokens.length === 0) return '';
     if (!tokens || !Array.isArray(tokens)) {
       console.error('tokens argument should be an array of integers');
       return '';
@@ -44,6 +43,7 @@ class Encode {
    * @return {string} compressed string
    */
   static encodeString(tokens) {
+    if (tokens.length === 0) return '';
     if (tokens.length < 3) {
       return tokens.join(',');
     }
@@ -79,6 +79,7 @@ class Encode {
    * @return {string} compressed string
    */
   static encodeDelta(tokens) {
+    if (tokens.length === 0) return '~';
     const sortedTokens = this._deltaCompression(tokens);
     const chunks = this._xBlocks(sortedTokens);
     return this._compressToString(chunks);
@@ -153,19 +154,4 @@ class Encode {
   }
 }
 
-
-// Tests DONE
-// encode([]);
-// encode([1]);
-// encode([1, 2]);
-// encode([1, 2, 3]);
-// console.log(encode([1, 2, 3, 4]));
-// // encode([1, 3, 5, 7]);
-// // encode([1, 2, 3, 5, 6, 7]);
-// console.log(encode([1, 2, 3, 5, 6, 7, 9], 1));
-// console.log(encode([1, 2, 3, 5, 6, 7, 9], 2));
-
-
-const obj = new Encode();
-console.log(obj.parse([1, 3, 5, 7], 1));
-console.log(obj.parse([1, 3, 5, 7], 2));
+module.exports = Encode;
