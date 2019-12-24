@@ -19,12 +19,10 @@ class Encode {
    */
   parse(tokens, mode = this.MODE_SIMPLE_STRING) {
     if (!tokens || !Array.isArray(tokens)) {
-      console.error('tokens argument should be an array of integers');
-      return '';
+      throw new TypeError('tokens argument should be an array of integers');
     }
     if (tokens.length > this.maxLength) {
-      console.error('array size is higher than allowed');
-      return '';
+      throw new RangeError('array size is higher than allowed');
     }
     if (mode === this.MODE_SIMPLE_STRING) {
       return (this.constructor.encodeString(tokens));
@@ -32,8 +30,7 @@ class Encode {
     if (mode === this.MODE_DELTA_STRING) {
       return (this.constructor.encodeDelta(tokens));
     }
-    console.error('you must select 1 or 2 at second parameter (1 - simple string, 2 - delta string)');
-    return '';
+    throw new Error('you must select 1 or 2 at second parameter (1 - simple string, 2 - delta string)');
   }
 
   /**
