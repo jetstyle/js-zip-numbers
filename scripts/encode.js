@@ -14,7 +14,8 @@ class Encode {
    * Encode array tokens to string
    *
    * @param tokens array of tokens
-   * @param mode where 1 - encode to simple string, 2 - encode to delta string
+   * @param mode where 1 - encode to simple string, 2 - encode to delta string.
+   * Default: MODE_SIMPLE_STRING
    * @return {string} encoding string
    */
   parse(tokens, mode = this.MODE_SIMPLE_STRING) {
@@ -102,7 +103,7 @@ class Encode {
    * Forming x-blocks from difference tokens
    *
    * @param tokens
-   * @return {[]}
+   * @return {string[]}
    * @private
    */
   static _xBlocks(tokens) {
