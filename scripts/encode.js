@@ -90,7 +90,7 @@ class Encode {
    * @private
    */
   static _deltaCompression(tokens) {
-    tokens.sort();
+    tokens.sort((a, b) => a - b);
     const diffTokens = [];
     tokens.forEach((token, i) => {
       i !== 0 ? diffTokens.push(token - tokens[i - 1]) : diffTokens.push(token);
