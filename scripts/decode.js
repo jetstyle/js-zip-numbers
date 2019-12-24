@@ -146,8 +146,7 @@ class Decode {
       if (blocks.length === 1) {
         tokens = this._wrap(chunk, listBy);
       } else {
-        let items = [];
-        items = blocks.map((block) => (this._wrap(block, listBy)));
+        const items = blocks.map((block) => (this._wrap(block, listBy)));
         items.forEach((item, i) => {
           if (i > 0) {
             const c = tokens.pop();
@@ -215,7 +214,7 @@ class Decode {
    * @private
    */
   _checkLength(newCount) {
-    if ((this.countTokens + newCount) > this.maxLength) throw new Error('Tokens count is greater than the limit.');
+    if ((this.countTokens + newCount) > this.maxLength) throw new RangeError('Tokens count is greater than the limit.');
   }
 }
 
