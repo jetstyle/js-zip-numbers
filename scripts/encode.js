@@ -45,7 +45,7 @@ class Encode {
     if (tokens.length < 3) {
       return tokens.join(',');
     }
-    const sortedTokens = tokens.sort();
+    const sortedTokens = tokens.sort((a, b) => a - b);
     const min = tokens[0];
 
     let compressedString = `${min}`;
