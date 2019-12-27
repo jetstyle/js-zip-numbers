@@ -2,6 +2,7 @@ const constants = require('../constants/index.js');
 
 class Encode {
   /**
+   * @param maxLength
    * @return {string}
    */
   constructor(
@@ -39,6 +40,7 @@ class Encode {
    *
    * @param tokens
    * @return {string} compressed string
+   * @private
    */
   _encodeString(tokens) {
     if (tokens.length === 0) return '';
@@ -75,6 +77,7 @@ class Encode {
    *
    * @param tokens
    * @return {string} compressed string
+   * @private
    */
   _encodeDelta(tokens) {
     if (tokens.length === 0) return constants.DELTA;
@@ -87,7 +90,7 @@ class Encode {
    * Converting array of tokens to sorted array of difference tokens
    *
    * @param tokens
-   * @return {[]} sorted array of difference tokens
+   * @return {number[]} sorted array of difference tokens
    * @private
    */
   _deltaCompression(tokens) {

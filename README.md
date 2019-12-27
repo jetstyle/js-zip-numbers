@@ -45,31 +45,64 @@ zip.decode('~.123');
 ```
 
 ## API
-### encode(tokens, [mode])
+<a name="Encode+_encodeString"></a>
 
-#### tokens
+<a name="Encode"></a>
 
-Type: `Object` `Object[]`
+## Encode
+**Kind**: global class  
 
-Array of tokens.
+* [Encode](#Encode)
+    * [new Encode(maxLength)](#new_Encode_new)
+    * [.parse(tokens, mode)](#Encode+parse) ⇒ <code>string</code>
 
-#### mode
+<a name="new_Encode_new"></a>
 
-Type: `number`
+### new Encode(maxLength)
 
-Number 1 or 2 for description selecting of method (simple string or delta)
+| Param | Default |
+| --- | --- |
+| maxLength | <code>1000000</code> | 
 
-##### return string  `string`
+<a name="Encode+parse"></a>
 
+### encode.parse(tokens, mode) ⇒ <code>string</code>
+Encode array tokens to string
 
-### decode(string)
+**Kind**: instance method of [<code>Encode</code>](#Encode)  
+**Returns**: <code>string</code> - encoding string  
 
-#### string
+| Param | Description |
+| --- | --- |
+| tokens | array of tokens |
+| mode | where 1 - encode to simple string, 2 - encode to delta string. Default: MODE_SIMPLE_STRING |
 
-Type: `string`
+<a name="Decode"></a>
 
-String of compressed tokens.
+## Decode
+**Kind**: global class  
 
-##### return tokens  `Object` `Object[]`
+* [Decode](#Decode)
+    * [new Decode(maxLength)](#new_Decode_new)
+    * [.parse(string)](#Decode+parse) ⇒ <code>Array.&lt;number&gt;</code>
 
+<a name="new_Decode_new"></a>
 
+### new Decode(maxLength)
+
+| Param | Default |
+| --- | --- |
+| maxLength | <code>1000000</code> | 
+
+<a name="Decode+parse"></a>
+
+### decode.parse(string) ⇒ <code>Array.&lt;number&gt;</code>
+Parse string to array of encoding numbers
+
+**Kind**: instance method of [<code>Decode</code>](#Decode)  
+
+| Param |
+| --- |
+| string | 
+
+<a name="Decode+parseString"></a>

@@ -1,6 +1,10 @@
 const constants = require('../constants/index.js');
 
 class Decode {
+  /**
+   * @param maxLength
+   * @return {number[]}
+   */
   constructor(maxLength = 1000000) {
     this.intBase = 10;
     this.maxLength = maxLength;
@@ -11,7 +15,7 @@ class Decode {
    * Parse string to array of encoding numbers
    *
    * @param string
-   * @returns {[]|*[]}
+   * @returns {number[]}
    */
   parse(string) {
     if (!string) {
@@ -31,9 +35,9 @@ class Decode {
 
     // Parse empty string as empty list
     if (string.startsWith(constants.DELTA)) {
-      items = this.parseDelta(string.slice(1));
+      items = this._parseDelta(string.slice(1));
     } else {
-      items = this.parseString(string);
+      items = this._parseString(string);
     }
 
     return items;
@@ -43,9 +47,10 @@ class Decode {
    * Parse string to tokens
    *
    * @param string
-   * @return {[]}
+   * @return {number[]}
+   * @private
    */
-  parseString(string) {
+  _parseString(string) {
     let buff = ''; const tokens = []; const
       zipBuff = [];
 
@@ -73,9 +78,10 @@ class Decode {
    * Parse string by delta
    *
    * @param string
-   * @return {[]} array with tokens
+   * @return {number[]} array with tokens
+   * @private
    */
-  parseDelta(string) {
+  _parseDelta(string) {
     let tokens = [];
     const chunks = this._deltaChunks(string);
 
@@ -97,7 +103,8 @@ class Decode {
    * Parse token from string
    *
    * @param token
-   * @return {[]} array with tokens
+   * @return {number[]} array with tokens
+   * @private
    */
   _parseToken(token) {
     let tokens = [];
@@ -105,7 +112,7 @@ class Decode {
       // eslint-disable-next-line prefer-const
       let [base, subString] = token.split(constants.ZIP_START_DELIMITER);
       base = parseInt(base, 10);
-      const items = this.parseString(subString.slice(0, subString.length - 1));
+      const items = this._parseString(subString.slice(0, subString.length - 1));
       items.forEach((item) => tokens.push(item + base));
       return tokens;
     }
@@ -129,7 +136,8 @@ class Decode {
    * Parse chunk of delta
    *
    * @param chunk
-   * @return {[]} array with tokens
+   * @return {number[]} array with tokens
+   * @private
    */
   _parseDeltaChunks(chunk) {
     let listBy;
@@ -168,7 +176,8 @@ class Decode {
    * Yield chunks for delta string
    *
    * @param string for split into chunks
-   * @return [] of chunks
+   * @return {string[]} of chunks
+   * @private
    */
   // eslint-disable-next-line class-methods-use-this
   _deltaChunks(string) {
@@ -195,7 +204,8 @@ class Decode {
    *
    * @param string
    * @param count symbols
-   * @returns {[]} list of several strings
+   * @returns {string[]} list of several strings
+   * @private
    */
   _wrap(string, count) {
     const list = [];
