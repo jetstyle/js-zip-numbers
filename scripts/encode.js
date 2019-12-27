@@ -26,10 +26,10 @@ class Encode {
       throw new RangeError('array size is higher than allowed');
     }
     if (mode === constants.MODE_SIMPLE_STRING) {
-      return (this.constructor.encodeString(tokens));
+      return (this._encodeString(tokens));
     }
     if (mode === constants.MODE_DELTA_STRING) {
-      return (this.constructor.encodeDelta(tokens));
+      return (this._encodeDelta(tokens));
     }
     throw new Error('you must select 1 or 2 at second parameter (1 - simple string, 2 - delta string)');
   }
@@ -40,7 +40,7 @@ class Encode {
    * @param tokens
    * @return {string} compressed string
    */
-  static encodeString(tokens) {
+  _encodeString(tokens) {
     if (tokens.length === 0) return '';
     if (tokens.length < 3) {
       return tokens.join(constants.NUM_DELIMITER);
@@ -76,7 +76,7 @@ class Encode {
    * @param tokens
    * @return {string} compressed string
    */
-  static encodeDelta(tokens) {
+  _encodeDelta(tokens) {
     if (tokens.length === 0) return constants.DELTA;
     const sortedTokens = this._deltaCompression(tokens);
     const chunks = this._xBlocks(sortedTokens);
@@ -90,7 +90,7 @@ class Encode {
    * @return {[]} sorted array of difference tokens
    * @private
    */
-  static _deltaCompression(tokens) {
+  _deltaCompression(tokens) {
     tokens.sort((a, b) => a - b);
     const diffTokens = [];
     tokens.forEach((token, i) => {
@@ -106,7 +106,7 @@ class Encode {
    * @return {string[]}
    * @private
    */
-  static _xBlocks(tokens) {
+  _xBlocks(tokens) {
     let buf = [];
     const tokensCopy = [];
     tokens.forEach((token, i) => {
@@ -126,7 +126,7 @@ class Encode {
    * @return {string} compressedString
    * @private
    */
-  static _compressToString(chunks) {
+  _compressToString(chunks) {
     let del = constants.NUM_DELIMITER;
     let newDel = null;
     let compressedString = '';
