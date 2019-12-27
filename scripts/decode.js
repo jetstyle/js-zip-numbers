@@ -1,10 +1,7 @@
+const constants = require('../constants/index.js');
+
 class Decode {
   constructor(maxLength = 1000000) {
-    this.NUM_DELIMITER = ',';
-    this.DELTA_LIST_BY_ONE = '.';
-    this.DELTA_LIST_BY_TWO = ':';
-    this.ZIP_START_DELIMITER = '(';
-    this.ZIP_END_DELIMITER = ')';
     this.intBase = 10;
     this.maxLength = maxLength;
     this.countTokens = 0;
@@ -24,7 +21,7 @@ class Decode {
     let items;
 
     // Parse base for int
-    if (string.startsWith('x')) {
+    if (string.startsWith(constants.MULTIPLICATION)) {
       let base;
       [base, string] = string.split(';');
       this.intBase = parseInt(base.slice(1), 10);
@@ -33,7 +30,7 @@ class Decode {
     }
 
     // Parse empty string as empty list
-    if (string.startsWith('~')) {
+    if (string.startsWith(constants.DELTA)) {
       items = this.parseDelta(string.slice(1));
     } else {
       items = this.parseString(string);
@@ -54,9 +51,9 @@ class Decode {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const ltr of string) {
-      if (ltr === this.ZIP_START_DELIMITER) zipBuff.push(1);
-      if (ltr === this.ZIP_END_DELIMITER) zipBuff.pop();
-      if (zipBuff.length === 0 && ltr === this.NUM_DELIMITER) {
+      if (ltr === constants.ZIP_START_DELIMITER) zipBuff.push(1);
+      if (ltr === constants.ZIP_END_DELIMITER) zipBuff.pop();
+      if (zipBuff.length === 0 && ltr === constants.NUM_DELIMITER) {
         this._parseToken(buff).forEach((item) => {
           tokens.push(item);
         });
@@ -104,9 +101,9 @@ class Decode {
    */
   _parseToken(token) {
     let tokens = [];
-    if (token.indexOf(this.ZIP_START_DELIMITER) > -1) {
+    if (token.indexOf(constants.ZIP_START_DELIMITER) > -1) {
       // eslint-disable-next-line prefer-const
-      let [base, subString] = token.split(this.ZIP_START_DELIMITER);
+      let [base, subString] = token.split(constants.ZIP_START_DELIMITER);
       base = parseInt(base, 10);
       const items = this.parseString(subString.slice(0, subString.length - 1));
       items.forEach((item) => tokens.push(item + base));
@@ -137,10 +134,10 @@ class Decode {
   _parseDeltaChunks(chunk) {
     let listBy;
     let tokens = [];
-    if (chunk.startsWith(this.DELTA_LIST_BY_ONE)) listBy = 1;
-    if (chunk.startsWith(this.DELTA_LIST_BY_TWO)) listBy = 2;
+    if (chunk.startsWith(constants.DELTA_LIST_BY_ONE)) listBy = 1;
+    if (chunk.startsWith(constants.DELTA_LIST_BY_TWO)) listBy = 2;
     if (listBy) chunk = chunk.slice(1);
-    const blocks = chunk.split('x');
+    const blocks = chunk.split(constants.MULTIPLICATION);
 
     if (listBy) {
       if (blocks.length === 1) {
@@ -173,15 +170,16 @@ class Decode {
    * @param string for split into chunks
    * @return [] of chunks
    */
+  // eslint-disable-next-line class-methods-use-this
   _deltaChunks(string) {
     const chunks = [];
     let buf = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const ltr of string) {
-      if (ltr === this.NUM_DELIMITER) {
+      if (ltr === constants.NUM_DELIMITER) {
         (buf !== '') && chunks.push(buf);
         buf = '';
-      } else if (ltr === this.DELTA_LIST_BY_ONE || ltr === this.DELTA_LIST_BY_TWO) {
+      } else if (ltr === constants.DELTA_LIST_BY_ONE || ltr === constants.DELTA_LIST_BY_TWO) {
         (buf !== '') && chunks.push(buf);
         buf = ltr;
       } else {

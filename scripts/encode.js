@@ -1,3 +1,5 @@
+const constants = require('../constants/index.js');
+
 class Encode {
   /**
    * @return {string}
@@ -5,8 +7,6 @@ class Encode {
   constructor(
     maxLength = 1000000,
   ) {
-    this.MODE_SIMPLE_STRING = 1;
-    this.MODE_DELTA_STRING = 2;
     this.maxLength = maxLength;
   }
 
@@ -18,17 +18,17 @@ class Encode {
    * Default: MODE_SIMPLE_STRING
    * @return {string} encoding string
    */
-  parse(tokens, mode = this.MODE_SIMPLE_STRING) {
+  parse(tokens, mode = constants.MODE_SIMPLE_STRING) {
     if (!tokens || !Array.isArray(tokens)) {
       throw new TypeError('tokens argument should be an array of integers');
     }
     if (tokens.length > this.maxLength) {
       throw new RangeError('array size is higher than allowed');
     }
-    if (mode === this.MODE_SIMPLE_STRING) {
+    if (mode === constants.MODE_SIMPLE_STRING) {
       return (this.constructor.encodeString(tokens));
     }
-    if (mode === this.MODE_DELTA_STRING) {
+    if (mode === constants.MODE_DELTA_STRING) {
       return (this.constructor.encodeDelta(tokens));
     }
     throw new Error('you must select 1 or 2 at second parameter (1 - simple string, 2 - delta string)');
@@ -43,7 +43,7 @@ class Encode {
   static encodeString(tokens) {
     if (tokens.length === 0) return '';
     if (tokens.length < 3) {
-      return tokens.join(',');
+      return tokens.join(constants.NUM_DELIMITER);
     }
     const sortedTokens = tokens.sort((a, b) => a - b);
     const min = tokens[0];
@@ -66,7 +66,7 @@ class Encode {
     });
 
     values = values.map((item) => (typeof item === 'number' ? item : `${item[0]}-${item[1]}`));
-    compressedString = `${compressedString}(${values.join(',')})`;
+    compressedString = `${compressedString}(${values.join(constants.NUM_DELIMITER)})`;
     return compressedString;
   }
 
@@ -77,7 +77,7 @@ class Encode {
    * @return {string} compressed string
    */
   static encodeDelta(tokens) {
-    if (tokens.length === 0) return '~';
+    if (tokens.length === 0) return constants.DELTA;
     const sortedTokens = this._deltaCompression(tokens);
     const chunks = this._xBlocks(sortedTokens);
     return this._compressToString(chunks);
@@ -127,22 +127,24 @@ class Encode {
    * @private
    */
   static _compressToString(chunks) {
-    let del = ',';
+    let del = constants.NUM_DELIMITER;
     let newDel = null;
     let compressedString = '';
 
     chunks.forEach((chunk) => {
-      if (chunk.indexOf('x') > -1) {
-        const [x, val] = chunk.split('x');
+      if (chunk.indexOf(constants.MULTIPLICATION) > -1) {
+        const [x, val] = chunk.split(constants.MULTIPLICATION);
         if (x.length === val.length) {
-          newDel = (val.length === 1 ? '.' : (val.length === 2 ? ':' : ','));
+          newDel = (val.length === 1 ? constants.DELTA_LIST_BY_ONE : (val.length === 2
+            ? constants.DELTA_LIST_BY_TWO : constants.NUM_DELIMITER));
         } else {
-          newDel = ',';
+          newDel = constants.NUM_DELIMITER;
         }
       } else {
-        newDel = (chunk.length === 1 ? '.' : (chunk.length === 2 ? ':' : ','));
+        newDel = (chunk.length === 1 ? constants.DELTA_LIST_BY_ONE : (chunk.length === 2
+          ? constants.DELTA_LIST_BY_TWO : constants.NUM_DELIMITER));
       }
-      if (newDel === ',' || newDel !== del) {
+      if (newDel === constants.NUM_DELIMITER || newDel !== del) {
         compressedString += newDel;
       }
       compressedString += chunk;
