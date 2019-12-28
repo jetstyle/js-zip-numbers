@@ -1,6 +1,7 @@
 const assert = require('assert');
 const Encode = require('../scripts/encode');
 const Decode = require('../scripts/decode');
+const { MODE_DELTA_STRING } = require('../constants');
 
 const testEncode = new Encode();
 const testDecode = new Decode();
@@ -17,8 +18,8 @@ describe('encoding', () => {
     assert.equal(testEncode.parse([1, 2, 3, 5, 6, 7, 9]), '1(0-2,4-6,8)');
   });
   it('For test making delta string', () => {
-    assert.equal(testEncode.parse([], 2), '~');
-    assert.equal(testEncode.parse([1, 3, 6], 2), '~.123');
+    assert.equal(testEncode.parse([], MODE_DELTA_STRING), '~');
+    assert.equal(testEncode.parse([1, 3, 6], MODE_DELTA_STRING), '~.123');
   });
 });
 

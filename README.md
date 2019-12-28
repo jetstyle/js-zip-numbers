@@ -27,10 +27,10 @@ const zip = require('zip-numbers');
 zip.encode([1,3,6]);
 //=> '1(0,2,5)'
 
-zip.encode([1,3,6], 1);
+zip.encode([1,3,6], zip.constants.MODE_SIMPLE_STRING);
 //=> '1(0,2,5)'
 
-zip.encode([1,3,6], 2);
+zip.encode([1,3,6], zip.constants.MODE_DELTA_STRING);
 //=> '~.123'
 ```
 #### Decode:
@@ -44,65 +44,38 @@ zip.decode('~.123');
 //=> [1, 3, 6]
 ```
 
-## API
-<a name="Encode+_encodeString"></a>
+## Functions
 
-<a name="Encode"></a>
+<dl>
+<dt><a href="#encode">encode(tokens, [mode])</a> ⇒ <code>string</code></dt>
+<dd><p>Encodes an array of tokens into a string.</p>
+</dd>
+<dt><a href="#decode">decode(string)</a> ⇒ <code>Array.&lt;number&gt;</code></dt>
+<dd><p>Decodes a string into an array of tokens.</p>
+</dd>
+</dl>
 
-## Encode
-**Kind**: global class  
+<a name="encode"></a>
 
-* [Encode](#Encode)
-    * [new Encode(maxLength)](#new_Encode_new)
-    * [.parse(tokens, mode)](#Encode+parse) ⇒ <code>string</code>
+## encode(tokens, [mode]) ⇒ <code>string</code>
+Encodes an array of tokens into a string.
+ 
+**Returns**: <code>string</code> - Encoded string.  
 
-<a name="new_Encode_new"></a>
+| Param  | Type                              | Default                         | Description                                                         |
+| ------ | --------------------------------- | ------------------------------- | ------------------------------------------------------------------- |
+| tokens | <code>Array.&lt;number&gt;</code> |                                 | Array of tokens.                                                    |
+| [mode] | <code>number</code>               | <code>MODE_SIMPLE_STRING</code> | Mode: MODE_SIMPLE_STRING or MODE_DELTA_STRING. See: `zip.constants` |
 
-### new Encode(maxLength)
+<a name="decode"></a>
 
-| Param | Default |
-| --- | --- |
-| maxLength | <code>1000000</code> | 
+## decode(string) ⇒ <code>Array.&lt;number&gt;</code>
+Decodes a string into an array of tokens.
 
-<a name="Encode+parse"></a>
+**Returns**: <code>Array.&lt;number&gt;</code> - Array of tokens.  
 
-### encode.parse(tokens, mode) ⇒ <code>string</code>
-Encode array tokens to string
+| Param  | Type                | Description     |
+| ------ | ------------------- | --------------- |
+| string | <code>string</code> | Encoded string. |
 
-**Kind**: instance method of [<code>Encode</code>](#Encode)  
-**Returns**: <code>string</code> - encoding string  
 
-| Param | Description |
-| --- | --- |
-| tokens | array of tokens |
-| mode | where 1 - encode to simple string, 2 - encode to delta string. Default: MODE_SIMPLE_STRING |
-
-<a name="Decode"></a>
-
-## Decode
-**Kind**: global class  
-
-* [Decode](#Decode)
-    * [new Decode(maxLength)](#new_Decode_new)
-    * [.parse(string)](#Decode+parse) ⇒ <code>Array.&lt;number&gt;</code>
-
-<a name="new_Decode_new"></a>
-
-### new Decode(maxLength)
-
-| Param | Default |
-| --- | --- |
-| maxLength | <code>1000000</code> | 
-
-<a name="Decode+parse"></a>
-
-### decode.parse(string) ⇒ <code>Array.&lt;number&gt;</code>
-Parse string to array of encoding numbers
-
-**Kind**: instance method of [<code>Decode</code>](#Decode)  
-
-| Param |
-| --- |
-| string | 
-
-<a name="Decode+parseString"></a>
